@@ -1,0 +1,16 @@
+.idea/
+*.iml
+*.iws
+
+/out/
+target/
+*.class
+
+*.log
+*.tmp
+*.swp
+
+.DS_Store
+Thumbs.db
+
+.java-version
