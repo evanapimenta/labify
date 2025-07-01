@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
     private final EmailService emailService;
     private final UserRoleService userRoleService;
 
-    public UserService(UserRepository userRepository, AuthenticationService authenticationService, PasswordEncoder passwordEncoder, EmailService emailService, UserRoleService userRoleService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, UserRoleService userRoleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
     }
 
     public UserResponseDTO findById(String id, String username) {
-        userRoleService.validateUserCredentials(id, username);
+        userRoleService.validateUserAccess(id, username);
         return userRepository.findById(id).map(UserResponseDTO::new).orElseThrow(() -> new UserNotFoundException(id));
     }
 
@@ -61,7 +61,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void update(String id, UpdateUserDTO updateUserDTO, String username) {
-        User user = userRoleService.validateUserCredentials(id, username);
+        User user = userRoleService.validateUserAccess(id, username);
         if (updateUserDTO.getName() != null) user.setName(updateUserDTO.getName());
 
         if (updateUserDTO.getEmail() != null) updateEmail(id, updateUserDTO.getEmail());
@@ -70,13 +70,13 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void delete(String id, String username) {
-        User user = userRoleService.validateUserCredentials(id, username);
+        User user = userRoleService.validateUserAccess(id, username);
         userRepository.delete(user);
     }
 
     @Transactional
     public void changePassword(String id, String username, UpdatePasswordDTO updatePasswordDTO) {
-        User user = userRoleService.validateUserCredentials(id, username);
+        User user = userRoleService.validateUserAccess(id, username);
         user.setPassword(passwordEncoder.encode(updatePasswordDTO.getPassword()));
         user.updateLastLogin();
     }
@@ -118,14 +118,6 @@ public class UserService implements UserDetailsService {
 
         user.setEmail(newEmail);
         userRepository.save(user);
-    }
-
-    private UserResponseDTO toUserResponseDTO(User user) {
-        return new UserResponseDTO()
-                .setId(user.getId())
-                .setName(user.getName())
-                .setEmail(user.getEmail())
-                .setCreatedAt(user.getCreatedAt());
     }
 }
 

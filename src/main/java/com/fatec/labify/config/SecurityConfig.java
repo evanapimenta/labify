@@ -35,9 +35,11 @@ public class SecurityConfig {
                                     "/refresh-token",
                                     "/users",
                                     "/users/verify-account",
-                                    "/patients/create/**").permitAll();
-                            request.requestMatchers("/user-roles/**").hasAnyRole("SYSTEM", "SUPER_USER", "ADMIN");
+                                    "/patients/create/**",
+                                    "/error").permitAll();
+                            request.requestMatchers("/user-roles/**").hasAnyRole("SYSTEM", "SUPER_ADMIN", "ADMIN");
                             request.requestMatchers("/labs/**").hasRole("SYSTEM");
+                            //request.requestMatchers("/branches/**").hasAnyRole("SYSTEM", "SUPER_ADMIN");
                             request.anyRequest().authenticated();
 
                         }

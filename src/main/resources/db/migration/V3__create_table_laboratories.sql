@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS laboratories(
 	email VARCHAR(255),
 	active BOOLEAN DEFAULT true,
 	cnpj VARCHAR(20),
-	super_admin_id VARCHAR(36),
+	super_admin_id VARCHAR(36) NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS branches(
 	laboratory_id VARCHAR(36) NOT NULL,
 	phone_number VARCHAR(20),
 	email VARCHAR(255),
-	admin_id VARCHAR(36) NOT NULL,
+	admin_id VARCHAR(36) NULL,
 	opening_hours VARCHAR(255) NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -24,7 +24,7 @@ public class LaboratoryController {
 
     @GetMapping
     public Page<LaboratoryResponseDTO> findAll(@ParameterObject Pageable pageable) {
-        return laboratoryService.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(laboratoryService.findAll(pageable)).getBody();
     }
 
     @GetMapping("/{id}")
@@ -34,14 +34,7 @@ public class LaboratoryController {
 
     @PostMapping
     public ResponseEntity<CreateLaboratoryResponseDTO> create(@Valid @RequestBody CreateLaboratoryDTO createLaboratoryDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CreateLaboratoryResponseDTO
-                (laboratoryService.create(createLaboratoryDTO)));
-    }
-
-    @PutMapping("/active/{id}")
-    public ResponseEntity<Void> changeActive(@PathVariable String id, boolean status) {
-        laboratoryService.changeActive(id, status);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CreateLaboratoryResponseDTO(laboratoryService.create(createLaboratoryDTO)));
     }
 
     @PutMapping("/{id}")
@@ -49,6 +42,12 @@ public class LaboratoryController {
                                                         @PathVariable String id) {
         laboratoryService.update(id, updateLaboratoryDTO);
         return ResponseEntity.status(HttpStatus.OK).body(new LaboratoryResponseDTO(laboratoryService.update(id, updateLaboratoryDTO)));
+    }
+
+    @PutMapping("/active/{id}")
+    public ResponseEntity<Void> changeActive(@PathVariable String id, boolean status) {
+        laboratoryService.changeActive(id, status);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

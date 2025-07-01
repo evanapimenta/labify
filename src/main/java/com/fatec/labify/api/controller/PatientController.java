@@ -26,7 +26,7 @@ public class PatientController {
 
     @GetMapping
     public Page<PatientResponseDTO> findAll(Pageable pageable) {
-        return patientService.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(patientService.findAll(pageable)).getBody();
     }
 
     @GetMapping("/{id}")

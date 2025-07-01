@@ -35,7 +35,7 @@ public class TokenService {
                     .withIssuer("Labify")
                     .withSubject(user.getUsername())
                     .withClaim("id", user.getId())
-                    .withClaim("role", user.getRole().name())
+                    .withClaim("role", user.getRole() != null ? user.getRole().name() : null)
                     .withExpiresAt(accessTokenExpiration())
                     .sign(algorithm);
         } catch (JWTCreationException exception){
@@ -50,7 +50,7 @@ public class TokenService {
                     .withIssuer("Labify")
                     .withSubject(user.getUsername())
                     .withClaim("id", user.getId())
-                    .withClaim("role", user.getRole().name())
+                    .withClaim("role", user.getRole() != null ? user.getRole().name() : null)
                     .withExpiresAt(refreshTokenExpiration())
                     .sign(algorithm);
         } catch (JWTCreationException exception){

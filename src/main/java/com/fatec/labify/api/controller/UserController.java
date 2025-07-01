@@ -25,13 +25,13 @@ public class UserController {
 
     @GetMapping
     public Page<UserResponseDTO> findAll(Pageable pageable) {
-        return userService.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(pageable)).getBody();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> findById(@PathVariable String id,
                                                     @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(userService.findById(id, userDetails.getUsername()));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findById(id, userDetails.getUsername()));
     }
 
     @PostMapping

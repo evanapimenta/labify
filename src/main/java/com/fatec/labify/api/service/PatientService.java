@@ -38,7 +38,7 @@ public class PatientService {
     }
 
     public PatientResponseDTO findById(String id, String username) {
-        userRoleService.validateUserCredentials(id, username);
+        userRoleService.validateUserAccess(id, username);
         return patientRepository.findById(id).map(PatientResponseDTO::new).orElseThrow(() -> new PatientNotFoundException(id));
     }
 
@@ -59,7 +59,7 @@ public class PatientService {
 
     @Transactional
     public void update(String id, UpdatePatientDTO updatePatientDTO, String username) {
-        User user = userRoleService.validateUserCredentials(id, username);
+        User user = userRoleService.validateUserAccess(id, username);
 
         Patient patient = patientRepository.findById(user.getId()).orElseThrow(() -> new PatientNotFoundException(id));
 
@@ -85,7 +85,7 @@ public class PatientService {
 
     @Transactional
     public void delete(String id, String username) {
-        User user = userRoleService.validateUserCredentials(id, username);
+        User user = userRoleService.validateUserAccess(id, username);
         user.setPatient(null);
         userRepository.save(user);
 
