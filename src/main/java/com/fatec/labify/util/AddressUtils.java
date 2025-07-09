@@ -7,9 +7,7 @@ import java.util.Optional;
 
 public class AddressUtils {
 
-    public static Address updateAddress(AddressDTO dto) {
-        Address address = new Address();
-
+    public static Address updateAddress(Address address, AddressDTO dto) {
         Optional.ofNullable(dto.getStreet()).ifPresent(address::setStreet);
         Optional.ofNullable(dto.getNumber()).ifPresent(address::setNumber);
         Optional.ofNullable(dto.getComplement()).ifPresent(address::setComplement);
