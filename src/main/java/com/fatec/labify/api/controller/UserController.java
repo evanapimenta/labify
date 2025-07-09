@@ -8,11 +8,13 @@ import com.fatec.labify.api.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/users")
@@ -24,25 +26,27 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<UserResponseDTO> findAll(Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(pageable)).getBody();
+    public ResponseEntity<Page<UserResponseDTO>> findAll(Pageable pageable) {
+        return ResponseEntity.ok().body(userService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> findById(@PathVariable String id,
                                                     @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findById(id, userDetails.getUsername()));
+        return ResponseEntity.ok().body(userService.findById(id, userDetails.getUsername()));
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody CreateUserDTO createUserDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDTO(userService.create(createUserDTO)));
-    }
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody CreateUserDTO dto) {
+        UserResponseDTO userDTO = userService.create(dto);
 
-    @GetMapping("/verify-account")
-    public ResponseEntity<String> verifyAccount(@RequestParam String code) {
-        userService.verifyAccount(code);
-        return ResponseEntity.ok("Conta verificada com sucesso!");
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(userDTO.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(userDTO);
     }
 
     @PutMapping("/{id}")
@@ -68,4 +72,14 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/verify-account")
+    public ResponseEntity<String> verifyAccount(@RequestParam String code) {
+        userService.verifyAccount(code);
+        return ResponseEntity.ok("Conta verificada com sucesso!");
+    }
+
+//    @PostMapping
+//    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody CreateUserDTO createUserDTO) {
+//        return ResponseEntity.created().body(new UserResponseDTO(userService.create(createUserDTO)));
+//    }
 }

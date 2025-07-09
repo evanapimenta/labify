@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -28,7 +29,6 @@ public class User implements UserDetails {
     private boolean active;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 
     @Column(updatable = false)
@@ -43,9 +43,23 @@ public class User implements UserDetails {
 
     private LocalDateTime lastLoginAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Patient patient;
+
+    public User(String name, String email, String password) {
+        this.id = UUID.randomUUID().toString();
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.active = false;
+        this.verified = false;
+        this.createdAt = LocalDateTime.now();
+        this.token = UUID.randomUUID().toString();
+        this.tokenExpiresIn = LocalDateTime.now().plusMinutes(30);
+    }
+
+    public User() {}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -61,9 +75,8 @@ public class User implements UserDetails {
         return password;
     }
 
-    public User setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
-        return this;
     }
 
     @Override
@@ -83,90 +96,61 @@ public class User implements UserDetails {
         return id;
     }
 
-    public User setId(String id) {
+    public void setId(String id) {
         this.id = id;
-        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public User setEmail(String email) {
+    public void setEmail(String email) {
         this.email = email;
-        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public User setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     public boolean getActive() {
         return active;
     }
 
-    public User setActive(boolean active) {
-        this.active = active;
-        return this;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public User setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
 
     public Role getRole() {
         return role;
     }
 
-    public User setRole(Role role) {
+    public void setRole(Role role) {
         this.role = role;
-        return this;
     }
 
     public String getToken() {
         return token;
     }
 
-    public User setToken(String token) {
-        this.token = token;
-        return this;
-    }
-
     public Boolean getVerified() {
         return verified;
-    }
-
-    public User setVerified(Boolean verified) {
-        this.verified = verified;
-        return this;
     }
 
     public LocalDateTime getTokenExpiresIn() {
         return tokenExpiresIn;
     }
 
-    public User setTokenExpiresIn(LocalDateTime tokenExpiresIn) {
-        this.tokenExpiresIn = tokenExpiresIn;
-        return this;
-    }
-
     public Patient getPatient() {
         return patient;
     }
 
-    public User setPatient(Patient patient) {
+    public void setPatient(Patient patient) {
         this.patient = patient;
-        return this;
     }
 
     public void verify() {

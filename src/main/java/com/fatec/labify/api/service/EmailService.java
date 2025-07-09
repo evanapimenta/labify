@@ -21,7 +21,7 @@ public class EmailService {
     public EmailService(JavaMailSender emailSender) { this.emailSender = emailSender; }
 
     @Async
-    private void sendEmail(String userEmail, String subject, String content) {
+    public void sendEmail(String userEmail, String subject, String content) {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 

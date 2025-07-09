@@ -3,6 +3,7 @@ package com.fatec.labify.config;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,15 +34,14 @@ public class SecurityConfig {
                                     "/swagger-ui/**", "/v3/api-docs/**",
                                     "/login",
                                     "/refresh-token",
-                                    "/users",
                                     "/users/verify-account",
                                     "/patients/create/**",
                                     "/error").permitAll();
+                            request.requestMatchers(HttpMethod.POST, "/users").permitAll();
+                            request.requestMatchers(HttpMethod.GET, "/users").hasRole("SYSTEM");
                             request.requestMatchers("/user-roles/**").hasAnyRole("SYSTEM", "SUPER_ADMIN", "ADMIN");
                             request.requestMatchers("/labs/**").hasRole("SYSTEM");
-                            //request.requestMatchers("/branches/**").hasAnyRole("SYSTEM", "SUPER_ADMIN");
                             request.anyRequest().authenticated();
-
                         }
                 )
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

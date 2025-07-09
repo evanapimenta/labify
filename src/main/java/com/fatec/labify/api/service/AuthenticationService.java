@@ -43,7 +43,7 @@ public class AuthenticationService {
 
     public void validateVerified(User user) {
         if (!user.getVerified()) {
-            throw new UserNotVerifiedException("Usuário não verificado");
+            throw new UserNotVerifiedException();
         }
     }
 }

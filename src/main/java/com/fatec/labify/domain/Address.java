@@ -26,6 +26,18 @@ public class Address {
     private String zipCode;
     private String country;
 
+    public Address(String street, String number, String neighborhood, String city, String state, String zipCode, String country) {
+        this.street = street;
+        this.number = number;
+        this.neighborhood = neighborhood;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
+        this.country = country;
+    }
+
+    public Address() {}
+
     public String getStreet() {
         return street;
     }

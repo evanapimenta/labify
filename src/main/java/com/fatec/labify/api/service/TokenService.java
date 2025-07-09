@@ -78,7 +78,7 @@ public class TokenService {
                     .orElseThrow(() -> new UserNotFoundException(userId));
 
             if (!user.getVerified()) {
-                throw new UserNotVerifiedException("Usuário não verificado.");
+                throw new UserNotVerifiedException();
             }
 
             return user;
