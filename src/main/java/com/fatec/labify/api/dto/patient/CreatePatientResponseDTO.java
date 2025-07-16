@@ -12,25 +12,12 @@ public class CreatePatientResponseDTO {
     private LocalDateTime createdAt;
 
     public CreatePatientResponseDTO(Patient patient) {
+        this.id = patient.getUser().getId();
         this.createdAt = patient.getCreatedAt();
     }
 
     public String getId() {
         return id;
-    }
-
-    public CreatePatientResponseDTO setId(String id) {
-        this.id = id;
-        return this;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public CreatePatientResponseDTO setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
     }
 
     @Override

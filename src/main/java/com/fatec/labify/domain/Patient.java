@@ -2,7 +2,6 @@ package com.fatec.labify.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,9 +42,24 @@ public class Patient {
 
     private String emergencyContactNumber;
 
-    @Column(updatable = false)
-    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public Patient() {}
+
+    public Patient(String cpf, String insuranceName, Gender gender, String phoneNumber, BigDecimal weight, String emergencyContactName, String emergencyContactNumber, boolean insured, LocalDate birthDate, Address address, User user) {
+        this.cpf = cpf;
+        this.insuranceName = insuranceName;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.weight = weight;
+        this.emergencyContactName = emergencyContactName;
+        this.emergencyContactNumber = emergencyContactNumber;
+        this.insured = insured;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.user = user;
+        this.createdAt = LocalDateTime.now();
+    }
 
     public String getId() {
         return id;
@@ -152,11 +166,6 @@ public class Patient {
 
     public LocalDate getBirthDate() {
         return birthDate;
-    }
-
-    public Patient setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-        return this;
     }
 
     @Override

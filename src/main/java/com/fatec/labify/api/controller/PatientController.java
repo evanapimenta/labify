@@ -9,11 +9,13 @@ import com.fatec.labify.api.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/patients")
@@ -25,8 +27,8 @@ public class PatientController {
     }
 
     @GetMapping
-    public Page<PatientResponseDTO> findAll(Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(patientService.findAll(pageable)).getBody();
+    public ResponseEntity<Page<PatientResponseDTO>> findAll(Pageable pageable) {
+        return ResponseEntity.ok().body(patientService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
@@ -38,7 +40,15 @@ public class PatientController {
     @PostMapping("/{id}")
     public ResponseEntity<CreatePatientResponseDTO> create(@PathVariable String id,
                                                            @Valid @RequestBody CreatePatientDTO createPatientDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CreatePatientResponseDTO(patientService.create(id, createPatientDTO)).setId(id));
+        CreatePatientResponseDTO patientDTO = patientService.create(id, createPatientDTO);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(patientDTO.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(patientDTO);
     }
 
     @PutMapping("/{id}")

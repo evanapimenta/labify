@@ -1,14 +1,12 @@
 package com.fatec.labify.api.dto.patient;
 
 import com.fatec.labify.domain.Gender;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 import java.math.BigDecimal;
 
 public class UpdatePatientDTO {
 
-    @NotBlank(message = "Número de telefone é obrigatório")
     @Pattern(regexp = "\\d{10,11}", message = "Número de telefone inválido")
     private String phoneNumber;
 
@@ -28,7 +26,7 @@ public class UpdatePatientDTO {
         return phoneNumber;
     }
 
-    public UpdatePatientDTO setPhoneNumber() {
+    public UpdatePatientDTO setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         return this;
     }
