@@ -39,8 +39,12 @@ public class SecurityConfig {
                                     "/error").permitAll();
                             request.requestMatchers(HttpMethod.POST, "/users").permitAll();
                             request.requestMatchers(HttpMethod.GET, "/users").hasRole("SYSTEM");
-                            request.requestMatchers("/user-roles/**").hasAnyRole("SYSTEM", "SUPER_ADMIN", "ADMIN");
+
+                            request.requestMatchers(HttpMethod.GET, "/labs/**").hasRole("SUPER_ADMIN");
+                            request.requestMatchers(HttpMethod.PUT, "/labs/**").hasRole("SUPER_ADMIN");
                             request.requestMatchers("/labs/**").hasRole("SYSTEM");
+
+                            request.requestMatchers("/user-roles/**").hasAnyRole("SYSTEM", "SUPER_ADMIN", "ADMIN");
                             request.anyRequest().authenticated();
                         }
                 )
