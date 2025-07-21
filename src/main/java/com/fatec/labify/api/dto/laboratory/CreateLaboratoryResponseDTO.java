@@ -36,6 +36,8 @@ public class CreateLaboratoryResponseDTO {
         this.phoneNumber = laboratory.getPhoneNumber();
     }
 
+    public CreateLaboratoryResponseDTO() {}
+
     public String getId() {
         return id;
     }

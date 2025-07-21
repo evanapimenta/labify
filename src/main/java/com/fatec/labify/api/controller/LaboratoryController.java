@@ -9,9 +9,13 @@ import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/labs")
@@ -23,37 +27,49 @@ public class LaboratoryController {
     }
 
     @GetMapping
-    public Page<LaboratoryResponseDTO> findAll(@ParameterObject Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(laboratoryService.findAll(pageable)).getBody();
+    public ResponseEntity<Page<LaboratoryResponseDTO>> findAll(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(laboratoryService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LaboratoryResponseDTO> findById(@PathVariable String id) {
-        return ResponseEntity.status(HttpStatus.OK).body(laboratoryService.findById(id));
+    public ResponseEntity<LaboratoryResponseDTO> findById(@AuthenticationPrincipal UserDetails userDetails,
+                                                          @PathVariable String id) {
+        return ResponseEntity.ok(laboratoryService.findById(id, userDetails.getUsername()));
     }
 
     @PostMapping
-    public ResponseEntity<CreateLaboratoryResponseDTO> create(@Valid @RequestBody CreateLaboratoryDTO createLaboratoryDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CreateLaboratoryResponseDTO(laboratoryService.create(createLaboratoryDTO)));
+    public ResponseEntity<CreateLaboratoryResponseDTO> create(@RequestBody @Valid CreateLaboratoryDTO dto) {
+        CreateLaboratoryResponseDTO laboratoryDTO = laboratoryService.create(dto);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(laboratoryDTO.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(laboratoryDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LaboratoryResponseDTO> update(@Valid @RequestBody UpdateLaboratoryDTO updateLaboratoryDTO,
-                                                        @PathVariable String id) {
-        laboratoryService.update(id, updateLaboratoryDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(new LaboratoryResponseDTO(laboratoryService.update(id, updateLaboratoryDTO)));
-    }
-
-    @PutMapping("/active/{id}")
-    public ResponseEntity<Void> changeActive(@PathVariable String id, boolean status) {
-        laboratoryService.changeActive(id, status);
+    public ResponseEntity<LaboratoryResponseDTO> update(@AuthenticationPrincipal UserDetails userDetails,
+                                                        @PathVariable String id,
+                                                        @Valid @RequestBody UpdateLaboratoryDTO updateLaboratoryDTO) {
+        laboratoryService.update(id, updateLaboratoryDTO, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        laboratoryService.delete(id);
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal UserDetails userDetails,
+                                       @PathVariable String id) {
+        laboratoryService.delete(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Void> changeStatus(@PathVariable String id,
+                                             @AuthenticationPrincipal UserDetails userDetails,
+                                             @RequestParam boolean active) {
+        laboratoryService.changeStatus(id, userDetails.getUsername(), active);
+        return ResponseEntity.noContent().build();
+    }
 }

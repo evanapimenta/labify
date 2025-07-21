@@ -1,11 +1,11 @@
 package com.fatec.labify.domain;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "laboratories")
@@ -34,12 +34,23 @@ public class Laboratory {
     @JoinColumn(name = "super_admin_id")
     private User superAdmin;
 
-    @Column(updatable = false)
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public Laboratory(String name, Address address, String phoneNumber, String email, String cnpj) {
+        this.id = UUID.randomUUID().toString();
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.cnpj = cnpj;
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public Laboratory() {}
 
     public String getId() {
         return id;
@@ -108,27 +119,12 @@ public class Laboratory {
         return cnpj;
     }
 
-    public Laboratory setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-        return this;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Laboratory setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public Laboratory setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
     }
 
     public List<Branch> getBranches() {
