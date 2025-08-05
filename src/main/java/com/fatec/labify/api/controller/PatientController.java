@@ -7,8 +7,6 @@ import com.fatec.labify.api.dto.patient.PatientResponseDTO;
 import com.fatec.labify.api.dto.patient.UpdatePatientDTO;
 import com.fatec.labify.api.service.PatientService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,21 +24,16 @@ public class PatientController {
         this.patientService = patientService;
     }
 
-    @GetMapping
-    public ResponseEntity<Page<PatientResponseDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok().body(patientService.findAll(pageable));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<PatientResponseDTO> findById(@PathVariable String id,
                                                        @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(patientService.findById(id, userDetails.getUsername()));
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<CreatePatientResponseDTO> create(@PathVariable String id,
+    @PostMapping
+    public ResponseEntity<CreatePatientResponseDTO> create(@AuthenticationPrincipal UserDetails userDetails,
                                                            @Valid @RequestBody CreatePatientDTO createPatientDTO) {
-        CreatePatientResponseDTO patientDTO = patientService.create(id, createPatientDTO);
+        CreatePatientResponseDTO patientDTO = patientService.create(userDetails.getUsername(), createPatientDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

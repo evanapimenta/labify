@@ -1,10 +1,10 @@
 package com.fatec.labify.api.service;
 
+import com.fatec.labify.api.dto.authentication.TokenData;
 import com.fatec.labify.api.dto.authentication.UpdatePasswordDTO;
 import com.fatec.labify.api.dto.user.CreateUserDTO;
 import com.fatec.labify.api.dto.user.UpdateUserDTO;
 import com.fatec.labify.api.dto.user.UserResponseDTO;
-import com.fatec.labify.domain.Role;
 import com.fatec.labify.domain.User;
 import com.fatec.labify.exception.*;
 import com.fatec.labify.repository.UserRepository;
@@ -26,11 +26,13 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final TokenService tokenService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, TokenService tokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.tokenService = tokenService;
     }
 
     public Page<UserResponseDTO> findAll(Pageable pageable) {
@@ -51,9 +53,10 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void verifyAccount(String token) {
+    public TokenData verifyAccount(String token) {
         User user = userRepository.findByToken(token).orElseThrow();
         user.verify();
+        return new TokenData(tokenService.generateToken(user), tokenService.generateRefreshToken(user));
     }
 
     @Transactional
@@ -89,12 +92,6 @@ public class UserService implements UserDetailsService {
         userRepository.delete(user);
     }
 
-    @Transactional
-    public void setUserRole(User user, Role role) {
-        user.setRole(role);
-        userRepository.save(user);
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
@@ -116,44 +113,6 @@ public class UserService implements UserDetailsService {
             throw new AlreadyExistsException("Usuário", "email", email);
         }
     }
-
-
-//    private void validateCreateUser(CreateUserDTO dto) {
-//        if (userRepository.existsByEmail(dto.getEmail())) {
-//            throw new AlreadyExistsException("Usuário", "email", dto.getEmail());
-//        }
-//    }
-
-//    @Transactional
-//    public User create(CreateUserDTO createUserDTO) {
-//        User user = validateCreateUser(createUserDTO);
-//        emailService.sendVerificationEmail(user);
-//        return userRepository.save(user);
-//    }
-
-//    private User validateCreateUser(CreateUserDTO createUserDTO) {
-//        Optional<User> existingByEmail = userRepository.findByEmailIgnoreCase(createUserDTO.getEmail());
-//
-//        if (existingByEmail.isPresent()) {
-//            throw new UserAlreadyExistsException("email", createUserDTO.getEmail());
-//        }
-//
-//        return createUser(createUserDTO);
-//    }
-
-//    private User createUser(CreateUserDTO createUserDTO) {
-//        return new User()
-//                .setId(UUID.randomUUID().toString())
-//                .setName(createUserDTO.getName())
-//                .setEmail(createUserDTO.getEmail().toLowerCase())
-//                .setPassword(passwordEncoder.encode(createUserDTO.getPassword()))
-//                .setRole(Role.PATIENT)
-//                .setActive(false)
-//                .setVerified(false)
-//                .setToken(UUID.randomUUID().toString())
-//                .setTokenExpiresIn(LocalDateTime.now().plusMinutes(30));
-//    }
-
 
 }
 

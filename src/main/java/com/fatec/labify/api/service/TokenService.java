@@ -53,7 +53,7 @@ public class TokenService {
                     .withClaim("role", user.getRole() != null ? user.getRole().name() : null)
                     .withExpiresAt(refreshTokenExpiration())
                     .sign(algorithm);
-        } catch (JWTCreationException exception){
+        } catch (JWTCreationException exception) {
             throw new TokenGenerationException("Erro ao gerar token. Tente novamente");
         }
     }
@@ -82,7 +82,7 @@ public class TokenService {
             }
 
             return user;
-        } catch (JWTVerificationException exception){
+        } catch (JWTVerificationException exception) {
             throw new TokenVerificationException("Erro ao verificar o token de acesso");
         }
     }

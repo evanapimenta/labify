@@ -13,11 +13,15 @@ public class CreatePatientResponseDTO {
 
     public CreatePatientResponseDTO(Patient patient) {
         this.id = patient.getUser().getId();
-        this.createdAt = patient.getCreatedAt();
+        this.createdAt = patient.getUser().getCreatedAt();
     }
 
     public String getId() {
         return id;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     @Override

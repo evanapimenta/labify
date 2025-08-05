@@ -22,11 +22,13 @@ public class PatientService {
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
     private final UserService userService;
+    private final UserRoleService userRoleService;
 
-    public PatientService(UserRepository userRepository, PatientRepository patientRepository, UserService userService) {
+    public PatientService(UserRepository userRepository, PatientRepository patientRepository, UserService userService, UserRoleService userRoleService) {
         this.userRepository = userRepository;
         this.patientRepository = patientRepository;
         this.userService = userService;
+        this.userRoleService = userRoleService;
     }
 
     public Page<PatientResponseDTO> findAll(Pageable pageable) {
@@ -37,10 +39,12 @@ public class PatientService {
         return patientRepository.findById(userService.validateUser(id, username).getId()).map(PatientResponseDTO::new)
                 .orElseThrow(() -> new PatientNotFoundException(id));
     }
+
     @Transactional
-    public CreatePatientResponseDTO create(String userId, CreatePatientDTO dto) {
+    public CreatePatientResponseDTO create(String email, CreatePatientDTO dto) {
+        User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> new UserNotFoundException(email));
+
         validateCpf(dto.getCpf());
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Paciente não encontrado"));
 
         Address address = new Address(dto.getAddressDTO().getStreet(), dto.getAddressDTO().getNumber(),
                 dto.getAddressDTO().getNeighborhood(), dto.getAddressDTO().getCity(), dto.getAddressDTO().getState(),
@@ -50,7 +54,7 @@ public class PatientService {
                 dto.getWeight(), dto.getEmergencyContactName(), dto.getEmergencyContactNumber(),
                 dto.getInsuranceName() != null, dto.getBirthDate(), address, user);
 
-        userService.setUserRole(user, Role.PATIENT);
+        userRoleService.setUserRole(user, Role.PATIENT);
         patientRepository.save(patient);
         return new CreatePatientResponseDTO(patient);
     }

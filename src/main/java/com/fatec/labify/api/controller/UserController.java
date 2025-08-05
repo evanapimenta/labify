@@ -1,5 +1,6 @@
 package com.fatec.labify.api.controller;
 
+import com.fatec.labify.api.dto.authentication.TokenData;
 import com.fatec.labify.api.dto.authentication.UpdatePasswordDTO;
 import com.fatec.labify.api.dto.user.CreateUserDTO;
 import com.fatec.labify.api.dto.user.UpdateUserDTO;
@@ -73,13 +74,7 @@ public class UserController {
     }
 
     @GetMapping("/verify-account")
-    public ResponseEntity<String> verifyAccount(@RequestParam String code) {
-        userService.verifyAccount(code);
-        return ResponseEntity.ok("Conta verificada com sucesso!");
+    public ResponseEntity<TokenData> verifyAccount(@RequestParam String code) {
+        return ResponseEntity.ok(userService.verifyAccount(code));
     }
-
-//    @PostMapping
-//    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody CreateUserDTO createUserDTO) {
-//        return ResponseEntity.created().body(new UserResponseDTO(userService.create(createUserDTO)));
-//    }
 }
