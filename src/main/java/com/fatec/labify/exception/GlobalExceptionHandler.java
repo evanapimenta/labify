@@ -30,8 +30,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
+    @ExceptionHandler(TokenGenerationException.class)
+    public ResponseEntity<String> handleTokenGenerationException(TokenGenerationException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
     @ExceptionHandler(TokenVerificationException.class)
-    public ResponseEntity<String> handleTokenVerificationException(TokenGenerationException ex) {
+    public ResponseEntity<String> handleTokenVerificationException(TokenVerificationException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
