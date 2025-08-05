@@ -1,8 +1,9 @@
 package com.fatec.labify.config;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fatec.labify.api.service.TokenService;
 import com.fatec.labify.domain.User;
-import com.fatec.labify.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,15 +27,23 @@ public class TokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = retrieveRequestToken(request);
-        if (token != null) {
-            User user = tokenService.validateAndGetUserFromToken(token);
+        try {
+            String token = retrieveRequestToken(request);
+            if (token != null) {
+                User user = tokenService.validateAndGetUserFromToken(token);
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            filterChain.doFilter(request, response);
         }
-
-        filterChain.doFilter(request, response);
+        catch (TokenExpiredException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token expirado. Efetue seu login e tente novamente.");
+            } catch (JWTVerificationException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Erro ao verificar o token de acesso.");
+            }
     }
 
     private String retrieveRequestToken(HttpServletRequest request) {

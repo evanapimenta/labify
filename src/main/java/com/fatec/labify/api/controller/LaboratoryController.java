@@ -61,15 +61,14 @@ public class LaboratoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@AuthenticationPrincipal UserDetails userDetails,
                                        @PathVariable String id) {
-        laboratoryService.delete(id, userDetails.getUsername());
+        laboratoryService.deactivate(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Void> changeStatus(@PathVariable String id,
-                                             @AuthenticationPrincipal UserDetails userDetails,
-                                             @RequestParam boolean active) {
-        laboratoryService.changeStatus(id, userDetails.getUsername(), active);
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Void> activate(@PathVariable String id,
+                                             @AuthenticationPrincipal UserDetails userDetails) {
+        laboratoryService.activate(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 }

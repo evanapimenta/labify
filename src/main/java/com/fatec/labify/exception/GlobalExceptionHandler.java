@@ -40,6 +40,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
+//    @ExceptionHandler(TokenVerificationException.class)
+//    public ResponseEntity<String> handleTokenVerificationException(TokenVerificationException ex) {
+//        Throwable cause = ex.getCause();
+//        if (cause instanceof TokenExpiredException) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expirado. Efetue seu login e tente novamente.");
+//        }
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Erro ao verificar o token de acesso");
+//    }
+
     @ExceptionHandler(UserNotVerifiedException.class)
     public ResponseEntity<String> handleUserNotVerifiedException(UserNotVerifiedException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
@@ -66,7 +75,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
-    public ResponseEntity<String> handleAuthenticationException(RuntimeException ex) {
+    public ResponseEntity<String> handleAuthenticationException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou senha inválidos.");
     }
 }

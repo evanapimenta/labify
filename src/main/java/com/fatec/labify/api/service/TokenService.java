@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fatec.labify.domain.User;
 import com.fatec.labify.exception.*;
@@ -61,7 +62,6 @@ public class TokenService {
     @Transactional(readOnly = true)
     public User validateAndGetUserFromToken(String jwtToken) throws BaseException {
         DecodedJWT decodedJWT;
-        try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("Labify")
@@ -82,9 +82,6 @@ public class TokenService {
             }
 
             return user;
-        } catch (JWTVerificationException exception) {
-            throw new TokenVerificationException("Erro ao verificar o token de acesso");
-        }
     }
 
     private Instant accessTokenExpiration() {

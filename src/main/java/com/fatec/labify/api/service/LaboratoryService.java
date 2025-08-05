@@ -6,6 +6,7 @@ import com.fatec.labify.api.dto.laboratory.LaboratoryResponseDTO;
 import com.fatec.labify.api.dto.laboratory.UpdateLaboratoryDTO;
 import com.fatec.labify.domain.Address;
 import com.fatec.labify.domain.Laboratory;
+import com.fatec.labify.domain.Role;
 import com.fatec.labify.domain.User;
 import com.fatec.labify.exception.AlreadyExistsException;
 import com.fatec.labify.exception.ForbiddenOperationException;
@@ -75,7 +76,7 @@ public class LaboratoryService {
     }
 
     @Transactional
-    public void delete(String id, String username) {
+    public void deactivate(String id, String username) {
         Laboratory lab = getAuthorizedLaboratory(id, username);
         lab.setActive(false);
 
@@ -83,9 +84,9 @@ public class LaboratoryService {
     }
 
     @Transactional
-    public void changeStatus(String id, String username, boolean active) {
+    public void activate(String id, String username) {
         Laboratory lab = getAuthorizedLaboratory(id, username);
-        lab.setActive(active);
+        lab.setActive(true);
         laboratoryRepository.save(lab);
     }
 
@@ -93,7 +94,7 @@ public class LaboratoryService {
         User authenticated = userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new UserNotFoundException(username));
         Laboratory lab = laboratoryRepository.findById(id).orElseThrow(() -> new LaboratoryNotFoundException(id));
 
-        if (!userRoleService.isUserInRole("SYSTEM")) {
+        if (!userRoleService.isUserInRole(Role.SYSTEM)) {
             if (lab.getSuperAdmin() == null || (!lab.getSuperAdmin().getId().equals(authenticated.getId()))) {
                 throw new ForbiddenOperationException();
             }
