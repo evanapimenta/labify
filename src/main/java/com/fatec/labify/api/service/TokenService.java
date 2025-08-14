@@ -4,8 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fatec.labify.domain.User;
 import com.fatec.labify.exception.*;
@@ -75,9 +73,9 @@ public class TokenService {
             }
 
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException(userId));
+                    .orElseThrow(() -> new NotFoundException("Usuário", userId));
 
-            if (!user.getVerified()) {
+            if (!user.isVerified()) {
                 throw new UserNotVerifiedException();
             }
 

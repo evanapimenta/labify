@@ -51,11 +51,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<UserResponseDTO> update(@AuthenticationPrincipal UserDetails userDetails,
                                        @PathVariable String id,
                                        @RequestBody UpdateUserDTO updateUserDTO) {
-        userService.update(id, updateUserDTO, userDetails.getUsername());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(userService.update(id, updateUserDTO, userDetails.getUsername()));
     }
 
     @PutMapping("/{id}/change-password")

@@ -1,15 +1,21 @@
 package com.fatec.labify.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "branches")
 public class Branch {
-
     @Id
     private String id;
 
@@ -22,6 +28,8 @@ public class Branch {
 
     private String email;
 
+    private boolean active;
+
     private String openingHours;
 
     @ManyToOne
@@ -32,100 +40,28 @@ public class Branch {
     @JoinColumn(name = "admin_id")
     private User admin;
 
-    @Column(updatable = false)
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public String getId() {
-        return id;
-    }
-
-    public Branch setId(String id) {
-        this.id = id;
-        return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Branch setName(String name) {
+    public Branch(String name, String email, String phoneNumber, String openingHours, Laboratory laboratory, Address address) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
-        return this;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public Branch setAddress(Address address) {
-        this.address = address;
-        return this;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public Branch setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-        return this;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Branch setEmail(String email) {
         this.email = email;
-        return this;
-    }
-
-    public User getAdmin() {
-        return admin;
-    }
-
-    public Branch setAdmin(User admin) {
-        this.admin = admin;
-        return this;
-    }
-
-    public String getOpeningHours() {
-        return openingHours;
-    }
-
-    public Branch setOpeningHours(String openingHours) {
+        this.phoneNumber = phoneNumber;
         this.openingHours = openingHours;
-        return this;
-    }
-
-    public Laboratory getLaboratory() {
-        return laboratory;
-    }
-
-    public Branch setLaboratory(Laboratory laboratory) {
         this.laboratory = laboratory;
-        return this;
+        this.address = address;
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public void activate() {
+        this.active = true;
     }
 
-    public Branch setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Branch setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
+    public void deactivate() {
+        this.active = false;
     }
 }

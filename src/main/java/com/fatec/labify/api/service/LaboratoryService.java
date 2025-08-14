@@ -6,12 +6,9 @@ import com.fatec.labify.api.dto.laboratory.LaboratoryResponseDTO;
 import com.fatec.labify.api.dto.laboratory.UpdateLaboratoryDTO;
 import com.fatec.labify.domain.Address;
 import com.fatec.labify.domain.Laboratory;
-import com.fatec.labify.domain.Role;
 import com.fatec.labify.domain.User;
 import com.fatec.labify.exception.AlreadyExistsException;
-import com.fatec.labify.exception.ForbiddenOperationException;
-import com.fatec.labify.exception.LaboratoryNotFoundException;
-import com.fatec.labify.exception.UserNotFoundException;
+import com.fatec.labify.exception.NotFoundException;
 import com.fatec.labify.repository.LaboratoryRepository;
 import com.fatec.labify.repository.UserRepository;
 import com.fatec.labify.util.AddressUtils;
@@ -25,12 +22,14 @@ import java.util.Optional;
 @Service
 public class LaboratoryService {
     private final UserRoleService userRoleService;
+    private final AccessControlService accessControlService;
     private final LaboratoryRepository laboratoryRepository;
     private final UserRepository userRepository;
 
-    public LaboratoryService(LaboratoryRepository laboratoryRepository, UserRoleService userRoleService, UserRepository userRepository) {
+    public LaboratoryService(LaboratoryRepository laboratoryRepository, UserRoleService userRoleService, AccessControlService accessControlService, UserRepository userRepository) {
         this.laboratoryRepository = laboratoryRepository;
         this.userRoleService = userRoleService;
+        this.accessControlService = accessControlService;
         this.userRepository = userRepository;
     }
 
@@ -39,7 +38,9 @@ public class LaboratoryService {
     }
 
     public LaboratoryResponseDTO findById(String id, String username) {
-        Laboratory lab = getAuthorizedLaboratory(id, username);
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Laboratory lab = laboratoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Laboratório", id));
+        accessControlService.validateCanManageLab(user, lab);
         return new LaboratoryResponseDTO(lab);
     }
 
@@ -60,8 +61,10 @@ public class LaboratoryService {
     }
 
     @Transactional
-    public void update(String id, UpdateLaboratoryDTO dto, String username) {
-        Laboratory lab = getAuthorizedLaboratory(id, username);
+    public LaboratoryResponseDTO update(String id, UpdateLaboratoryDTO dto, String username) {
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Laboratory lab = laboratoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Laboratório", id));
+        accessControlService.validateCanManageLab(user, lab);
 
         Optional.ofNullable(dto.getName()).ifPresent(lab::setName);
         Optional.ofNullable(dto.getPhoneNumber()).ifPresent(lab::setPhoneNumber);
@@ -73,34 +76,25 @@ public class LaboratoryService {
         });
 
         laboratoryRepository.save(lab);
-    }
-
-    @Transactional
-    public void deactivate(String id, String username) {
-        Laboratory lab = getAuthorizedLaboratory(id, username);
-        lab.setActive(false);
-
-        laboratoryRepository.save(lab);
+        return new LaboratoryResponseDTO(lab);
     }
 
     @Transactional
     public void activate(String id, String username) {
-        Laboratory lab = getAuthorizedLaboratory(id, username);
-        lab.setActive(true);
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Laboratory lab = laboratoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Laboratório", id));
+        accessControlService.validateCanManageLab(user, lab);
+        lab.activate();
         laboratoryRepository.save(lab);
     }
 
-    private Laboratory getAuthorizedLaboratory(String id, String username) {
-        User authenticated = userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new UserNotFoundException(username));
-        Laboratory lab = laboratoryRepository.findById(id).orElseThrow(() -> new LaboratoryNotFoundException(id));
-
-        if (!userRoleService.isUserInRole(Role.SYSTEM)) {
-            if (lab.getSuperAdmin() == null || (!lab.getSuperAdmin().getId().equals(authenticated.getId()))) {
-                throw new ForbiddenOperationException();
-            }
-        }
-
-        return lab;
+    @Transactional
+    public void deactivate(String id, String username) {
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Laboratory lab = laboratoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Laboratório", id));
+        accessControlService.validateCanManageLab(user, lab);
+        lab.deactivate();
+        laboratoryRepository.save(lab);
     }
 
     private void validateCnpj(String cnpj) {

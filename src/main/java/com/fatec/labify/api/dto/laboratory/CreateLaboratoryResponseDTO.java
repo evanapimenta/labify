@@ -6,23 +6,25 @@ import com.fatec.labify.api.dto.patient.AddressDTO;
 import com.fatec.labify.domain.Laboratory;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class CreateLaboratoryResponseDTO {
+
     private String id;
 
-    @NotBlank(message = "Nome não pode estar vazio")
     private String name;
 
-    @NotBlank(message = "CNPJ não pode estar vazio")
     private String cnpj;
 
-    @Email(message = "Email inválido")
     private String email;
 
-    @NotBlank(message = "Número de telefone é obrigatório")
     private String phoneNumber;
 
     private AddressDTO address;
@@ -36,59 +38,4 @@ public class CreateLaboratoryResponseDTO {
         this.phoneNumber = laboratory.getPhoneNumber();
     }
 
-    public CreateLaboratoryResponseDTO() {}
-
-    public String getId() {
-        return id;
-    }
-
-    public CreateLaboratoryResponseDTO setId(String id) {
-        this.id = id;
-        return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public CreateLaboratoryResponseDTO setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public CreateLaboratoryResponseDTO setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-        return this;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public CreateLaboratoryResponseDTO setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public CreateLaboratoryResponseDTO setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-        return this;
-    }
-
-    public AddressDTO getAddress() {
-        return address;
-    }
-
-    public CreateLaboratoryResponseDTO setAddress(AddressDTO address) {
-        this.address = address;
-        return this;
-    }
 }

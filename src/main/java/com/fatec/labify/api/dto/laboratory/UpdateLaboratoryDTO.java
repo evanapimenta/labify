@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fatec.labify.api.dto.patient.AddressDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateLaboratoryDTO {
 
@@ -18,39 +22,4 @@ public class UpdateLaboratoryDTO {
 
     private AddressDTO addressDTO;
 
-    public String getName() {
-        return name;
-    }
-
-    public UpdateLaboratoryDTO setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public UpdateLaboratoryDTO setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-        return this;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public UpdateLaboratoryDTO setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public AddressDTO getAddressDTO() {
-        return addressDTO;
-    }
-
-    public UpdateLaboratoryDTO setAddressDTO(AddressDTO addressDTO) {
-        this.addressDTO = addressDTO;
-        return this;
-    }
 }

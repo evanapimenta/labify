@@ -45,11 +45,11 @@ public class PatientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<PatientResponseDTO> update(@AuthenticationPrincipal UserDetails userDetails,
                                        @PathVariable String id,
                                        @Valid @RequestBody UpdatePatientDTO updatePatientDTO) {
-        patientService.update(id, updatePatientDTO, userDetails.getUsername());
-        return ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok(patientService.update(id, updatePatientDTO, userDetails.getUsername()));
     }
 
     @DeleteMapping("/{id}")

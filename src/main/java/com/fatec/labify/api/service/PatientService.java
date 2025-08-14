@@ -37,12 +37,12 @@ public class PatientService {
 
     public PatientResponseDTO findById(String id, String username) {
         return patientRepository.findById(userService.validateUser(id, username).getId()).map(PatientResponseDTO::new)
-                .orElseThrow(() -> new PatientNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException("Paciente", id));
     }
 
     @Transactional
     public CreatePatientResponseDTO create(String email, CreatePatientDTO dto) {
-        User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> new UserNotFoundException(email));
+        User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> new NotFoundException("Usuário", email));
 
         validateCpf(dto.getCpf());
 
@@ -54,16 +54,16 @@ public class PatientService {
                 dto.getWeight(), dto.getEmergencyContactName(), dto.getEmergencyContactNumber(),
                 dto.getInsuranceName() != null, dto.getBirthDate(), address, user);
 
-        userRoleService.setUserRole(user, Role.PATIENT);
+        user.setRole(Role.PATIENT);
         patientRepository.save(patient);
         return new CreatePatientResponseDTO(patient);
     }
 
     @Transactional
-    public void update(String id, UpdatePatientDTO dto, String username) {
+    public PatientResponseDTO update(String id, UpdatePatientDTO dto, String username) {
         User user = userService.validateUser(id, username);
         Patient patient = patientRepository.findById(user.getId())
-                .orElseThrow(() -> new PatientNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException("Paciente", id));
 
         Optional.ofNullable(dto.getWeight()).ifPresent(patient::setWeight);
         Optional.ofNullable(dto.getPhoneNumber()).ifPresent(patient::setPhoneNumber);
@@ -82,6 +82,7 @@ public class PatientService {
         });
 
         patientRepository.save(patient);
+        return new PatientResponseDTO(patient);
     }
 
     @Transactional

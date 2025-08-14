@@ -60,7 +60,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void update(String id, UpdateUserDTO updateUserDTO, String username) {
+    public UserResponseDTO update(String id, UpdateUserDTO updateUserDTO, String username) {
         User user = validateUser(id, username);
         Optional.ofNullable(updateUserDTO.getName()).ifPresent(user::setName);
 
@@ -69,11 +69,12 @@ public class UserService implements UserDetailsService {
         }
 
         userRepository.save(user);
+        return new UserResponseDTO(user);
     }
 
     private User updateEmail(String id, String newEmail) {
         validateEmail(newEmail);
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Usuário", id));
         user.setEmail(newEmail);
         return user;
     }
@@ -93,13 +94,13 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+    public UserDetails loadUserByUsername(String username) {
+        return userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
     }
 
     public User validateUser(String id, String username) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        if (!user.getVerified()) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Usuário", id));
+        if (!user.isVerified()) {
             throw new UserNotVerifiedException();
         }
         if (!Objects.equals(username, user.getUsername())) {
@@ -113,6 +114,5 @@ public class UserService implements UserDetailsService {
             throw new AlreadyExistsException("Usuário", "email", email);
         }
     }
-
 }
 

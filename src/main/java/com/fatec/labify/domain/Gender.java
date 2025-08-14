@@ -1,8 +1,8 @@
 package com.fatec.labify.domain;
 
 public enum Gender {
-    MALE,
-    FEMALE,
-    OTHER,
-    PREFER_NOT_TO_SAY
+    FEMININO,
+    MASCULINO,
+    OUTRO,
+    PREFIRO_NAO_DIZER
 }

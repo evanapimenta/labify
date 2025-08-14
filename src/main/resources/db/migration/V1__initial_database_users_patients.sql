@@ -12,12 +12,13 @@ CREATE TABLE IF NOT EXISTS users (
     token_expires_in TIMESTAMP
 );
 
+CREATE TYPE gender_enum AS ENUM ('masculino', 'feminino', 'outro', 'prefiro_nao_dizer');
 
 CREATE TABLE IF NOT EXISTS patients (
     id VARCHAR(36) PRIMARY KEY,
     cpf VARCHAR(11) UNIQUE,
     birth_date DATE NOT NULL,
-    gender VARCHAR(20) CHECK (gender IN ('MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY')),
+    gender gender_enum NOT NULL DEFAULT 'prefiro_nao_dizer',
     weight DECIMAL(5, 2),
     phone_number VARCHAR(20),
     insured BOOLEAN NOT NULL,

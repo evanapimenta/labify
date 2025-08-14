@@ -42,7 +42,7 @@ public class AuthenticationService {
     }
 
     public void validateVerified(User user) {
-        if (!user.getVerified()) {
+        if (!user.isVerified()) {
             throw new UserNotVerifiedException();
         }
     }

@@ -1,131 +1,103 @@
 package com.fatec.labify.api.service;
 
-import com.fatec.labify.api.dto.CreateBranchDTO;
-import com.fatec.labify.api.dto.UpdateBranchDTO;
-import com.fatec.labify.api.dto.branch.BranchDTO;
-import com.fatec.labify.api.dto.patient.AddressDTO;
-import com.fatec.labify.domain.Address;
-import com.fatec.labify.domain.Branch;
-import com.fatec.labify.domain.Laboratory;
-import com.fatec.labify.exception.BranchNotFoundException;
-import com.fatec.labify.exception.ForbiddenOperationException;
-import com.fatec.labify.exception.LaboratoryNotFoundException;
+import com.fatec.labify.api.dto.branch.CreateBranchDTO;
+import com.fatec.labify.api.dto.branch.CreateBranchResponseDTO;
+import com.fatec.labify.api.dto.branch.UpdateBranchDTO;
+import com.fatec.labify.api.dto.branch.BranchResponseDTO;
+import com.fatec.labify.domain.*;
+import com.fatec.labify.exception.NotFoundException;
 import com.fatec.labify.repository.BranchRepository;
 import com.fatec.labify.repository.LaboratoryRepository;
+import com.fatec.labify.repository.UserRepository;
+import com.fatec.labify.util.AddressUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class BranchService {
+    private final AccessControlService accessControlService;
     private final BranchRepository branchRepository;
-    private final UserRoleService userRoleService;
     private final LaboratoryRepository laboratoryRepository;
+    private final UserRepository userRepository;
 
     public BranchService(BranchRepository branchRepository,
-                         UserRoleService userRoleService,
-                         LaboratoryRepository laboratoryRepository) {
+                         LaboratoryRepository laboratoryRepository,
+                         UserRepository userRepository,
+                         AccessControlService accessControlService) {
         this.branchRepository = branchRepository;
-        this.userRoleService = userRoleService;
         this.laboratoryRepository = laboratoryRepository;
+        this.userRepository = userRepository;
+        this.accessControlService = accessControlService;
     }
 
-    public BranchDTO findById(String username, String id) {
-        if (userRoleService.hasBranchAccess(username, id)) {
-            throw new ForbiddenOperationException("Acesso não autorizado");
-        }
-
-        return branchRepository.findById(id).map(BranchDTO::new).orElseThrow(() -> new BranchNotFoundException(id));
-
+    public BranchResponseDTO findById(String username, String id) {
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Branch branch = branchRepository.findById(id).orElseThrow(() -> new NotFoundException("Filial", id));
+        accessControlService.canManageBranch(user, branch);
+        return new BranchResponseDTO(branch);
     }
 
-    public Page<BranchDTO> findAll(String username, Pageable pageable) {
-        if (userRoleService.hasBranchAccess(username, null)) {
-            throw new ForbiddenOperationException("Acesso não autorizado");
-        }
-
-        return branchRepository.findAll(pageable).map(BranchDTO::new);
-    }
-
-    @Transactional
-    public Branch create(String username, CreateBranchDTO createBranchDTO) {
-        if (userRoleService.hasBranchAccess(username, null)) {
-            throw new ForbiddenOperationException("Acesso não autorizado");
-        }
-
-        Laboratory laboratory = laboratoryRepository.findById(createBranchDTO.getLaboratoryId()).orElseThrow(() ->
-                new LaboratoryNotFoundException(createBranchDTO.getLaboratoryId()));
-
-        Branch branch = new Branch()
-                .setId(UUID.randomUUID().toString())
-                .setName(createBranchDTO.getName())
-                .setEmail(createBranchDTO.getEmail())
-                .setLaboratory(laboratory)
-                .setPhoneNumber(createBranchDTO.getPhoneNumber())
-                .setOpeningHours(createBranchDTO.getOpeningHours())
-                .setAddress(setCreateAddress(createBranchDTO));
-
-        return branchRepository.save(branch);
+    public Page<BranchResponseDTO> findByLabId(String username, String id, Pageable pageable) {
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Laboratory lab = laboratoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Laboratório", id));
+        accessControlService.canManageLab(user, lab);
+        return branchRepository.findBranchByLaboratory_Id(id, pageable).map(BranchResponseDTO::new);
     }
 
     @Transactional
-    public void update(String username, String id, UpdateBranchDTO updateBranchDTO) {
-        if (userRoleService.hasBranchAccess(username, null)) {
-            throw new ForbiddenOperationException("Acesso não autorizado");
-        }
+    public CreateBranchResponseDTO create(CreateBranchDTO dto) {
+        Laboratory lab = laboratoryRepository.findById(dto.getLaboratoryId()).orElseThrow(() -> new NotFoundException("Laboratório", dto.getLaboratoryId()));
 
-        Branch branch = branchRepository.findById(id).orElseThrow(() -> new BranchNotFoundException(id));
+        Address address = new Address(dto.getAddressDTO().getStreet(), dto.getAddressDTO().getNumber(),
+                dto.getAddressDTO().getNeighborhood(), dto.getAddressDTO().getCity(), dto.getAddressDTO().getState(),
+                dto.getAddressDTO().getZipCode(), dto.getAddressDTO().getCountry());
+        Branch branch = new Branch(dto.getName(), dto.getEmail(), dto.getPhoneNumber(), dto.getOpeningHours(),
+                lab, address);
 
-        if (updateBranchDTO.getName() != null) branch.setName(updateBranchDTO.getName());
-        if (updateBranchDTO.getPhoneNumber() != null) branch.setPhoneNumber(updateBranchDTO.getPhoneNumber());
-        if (updateBranchDTO.getEmail() != null) branch.setEmail(updateBranchDTO.getEmail());
-        if (updateBranchDTO.getOpeningHours() != null) branch.setOpeningHours(updateBranchDTO.getOpeningHours());
+        branchRepository.save(branch);
+        return new CreateBranchResponseDTO(branch);
+    }
 
-        if (updateBranchDTO.getAddressDTO() != null) {
-            setUpdateAddress(branch, updateBranchDTO.getAddressDTO());
-        }
+    @Transactional
+    public BranchResponseDTO update(String username, String id, UpdateBranchDTO dto) {
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Branch branch = branchRepository.findById(id).orElseThrow(() -> new NotFoundException("Filial", id));
+        accessControlService.validateCanManageBranch(user, branch);
 
+        Optional.ofNullable(dto.getName()).ifPresent(branch::setName);
+        Optional.ofNullable(dto.getPhoneNumber()).ifPresent(branch::setPhoneNumber);
+        Optional.ofNullable(dto.getEmail()).ifPresent(branch::setEmail);
+        Optional.ofNullable(dto.getOpeningHours()).ifPresent(branch::setOpeningHours);
+
+        Optional.ofNullable(dto.getAddressDTO()).ifPresent(addressDTO -> {
+            Address address = AddressUtils.updateAddress(branch.getAddress(), addressDTO);
+            branch.setAddress(address);
+        });
+
+        branchRepository.save(branch);
+        return new BranchResponseDTO(branch);
+    }
+
+    @Transactional
+    public void activate(String username, String id) {
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Branch branch = branchRepository.findById(id).orElseThrow(() -> new NotFoundException("Filial", id));
+        accessControlService.validateCanManageLab(user, branch.getLaboratory());
+        branch.activate();
         branchRepository.save(branch);
     }
 
     @Transactional
-    public void delete(String username, String id) {
-        if (userRoleService.hasBranchAccess(username, null)) {
-            throw new ForbiddenOperationException("Acesso não autorizado");
-        }
-
-        Branch branch = branchRepository.findById(id).orElseThrow(() -> new BranchNotFoundException(id));
-        branchRepository.delete(branch);
-    }
-
-    private void setUpdateAddress(Branch branch, AddressDTO dto) {
-        Address address = branch.getAddress();
-
-        if (dto.getStreet() != null) address.setStreet(dto.getStreet());
-        if (dto.getNumber() != null) address.setNumber(dto.getNumber());
-        if (dto.getComplement() != null) address.setComplement(dto.getComplement());
-        if (dto.getNeighborhood() != null) address.setNeighborhood(dto.getNeighborhood());
-        if (dto.getCity() != null) address.setCity(dto.getCity());
-        if (dto.getState() != null) address.setState(dto.getState());
-        if (dto.getCountry() != null) address.setCountry(dto.getCountry());
-        if (dto.getZipCode() != null) address.setZipCode(dto.getZipCode());
-
-        branch.setAddress(address);
-    }
-
-    private Address setCreateAddress(CreateBranchDTO createBranchDTO) {
-        return new Address()
-                .setStreet(createBranchDTO.getAddressDTO().getStreet())
-                .setNumber(createBranchDTO.getAddressDTO().getNumber())
-                .setComplement(createBranchDTO.getAddressDTO().getComplement())
-                .setNeighborhood(createBranchDTO.getAddressDTO().getNeighborhood())
-                .setCity(createBranchDTO.getAddressDTO().getCity())
-                .setState(createBranchDTO.getAddressDTO().getState())
-                .setZipCode(createBranchDTO.getAddressDTO().getZipCode())
-                .setCountry(createBranchDTO.getAddressDTO().getCountry());
+    public void delete(String id, String username) {
+        User user =  userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        Branch branch = branchRepository.findById(id).orElseThrow(() -> new NotFoundException("Laboratório", id));
+        accessControlService.validateCanManageLab(user, branch.getLaboratory());
+        branch.deactivate();
+        branchRepository.save(branch);
     }
 
 }

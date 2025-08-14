@@ -3,6 +3,9 @@ package com.fatec.labify.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fatec.labify.exception.InvalidTokenException;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -59,8 +65,6 @@ public class User implements UserDetails {
         this.tokenExpiresIn = LocalDateTime.now().plusMinutes(30);
     }
 
-    public User() {}
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (role == null) {
@@ -75,10 +79,6 @@ public class User implements UserDetails {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public String getUsername() {
         return email;
@@ -86,71 +86,6 @@ public class User implements UserDetails {
 
     public void updateLastLogin() {
         this.lastLoginAt = LocalDateTime.now();
-    }
-
-    public LocalDateTime getLastLoginAt() {
-        return lastLoginAt;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean getActive() {
-        return active;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public Boolean getVerified() {
-        return verified;
-    }
-
-    public LocalDateTime getTokenExpiresIn() {
-        return tokenExpiresIn;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
     }
 
     public void verify() {
@@ -162,5 +97,4 @@ public class User implements UserDetails {
         this.token = null;
         this.tokenExpiresIn = null;
     }
-
 }

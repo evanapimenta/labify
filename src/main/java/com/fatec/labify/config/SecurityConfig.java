@@ -41,12 +41,21 @@ public class SecurityConfig {
                             request.requestMatchers(HttpMethod.GET, "/users").hasRole("SYSTEM");
 
                             request.requestMatchers(HttpMethod.GET, "/labs").hasRole("SYSTEM");
-                            request.requestMatchers(HttpMethod.GET, "/labs/**").hasRole("SUPER_ADMIN");
                             request.requestMatchers(HttpMethod.POST, "/labs").hasRole("SYSTEM");
                             request.requestMatchers(HttpMethod.PUT, "/labs/**").hasAnyRole("SYSTEM", "SUPER_ADMIN");
                             request.requestMatchers(HttpMethod.DELETE, "/labs").hasRole("SYSTEM");
                             request.requestMatchers(HttpMethod.PUT, "/labs/{id}/status").hasRole("SYSTEM");
 
+                            request.requestMatchers(HttpMethod.GET, "/branches").hasAnyRole("SYSTEM", "SUPER_ADMIN");
+                            request.requestMatchers(HttpMethod.POST, "/branches").hasAnyRole("SYSTEM", "SUPER_ADMIN");
+
+                            request.requestMatchers(HttpMethod.POST, "/tests").hasRole("SYSTEM");
+                            request.requestMatchers(HttpMethod.PUT, "/tests/{id}").hasRole("SYSTEM");
+                            request.requestMatchers(HttpMethod.DELETE, "/tests/{id}").hasRole("SYSTEM");
+
+                            request.requestMatchers(HttpMethod.GET, "schedule/{id}").hasAnyRole("SYSTEM", "SUPER_ADMIN", "ADMIN");
+
+                            request.requestMatchers(HttpMethod.GET, "/roles/").hasAnyRole("SYSTEM");
                             request.requestMatchers("/user-roles/**").hasAnyRole("SYSTEM", "SUPER_ADMIN", "ADMIN");
                             request.anyRequest().authenticated();
                         }

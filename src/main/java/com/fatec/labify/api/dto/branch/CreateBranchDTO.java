@@ -1,4 +1,4 @@
-package com.fatec.labify.api.dto.laboratory;
+package com.fatec.labify.api.dto.branch;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fatec.labify.api.dto.patient.AddressDTO;
@@ -7,26 +7,25 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.br.CNPJ;
 
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateLaboratoryDTO {
-
-    @NotBlank(message = "Nome do laboratório é obrigatório")
+public class CreateBranchDTO {
+    @NotBlank(message = "O nome não pode estar em branco")
     private String name;
 
     private AddressDTO addressDTO;
 
     @Pattern(regexp = "\\d{10,11}", message = "Número de telefone inválido")
-    @NotBlank(message = "Telefone da matriz é obrigatório")
     private String phoneNumber;
 
     @Email(message = "Email inválido")
-    @NotBlank(message = "Email do laboratório é obrigatório")
     private String email;
 
-    @CNPJ
-    private String cnpj;
+    @NotBlank(message = "Horário de funcionamento não pode estar em branco")
+    private String openingHours;
+
+    @NotBlank(message = "Informe o id do laboratório")
+    private String laboratoryId;
 }

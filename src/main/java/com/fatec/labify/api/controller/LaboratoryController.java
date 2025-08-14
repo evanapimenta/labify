@@ -54,8 +54,7 @@ public class LaboratoryController {
     public ResponseEntity<LaboratoryResponseDTO> update(@AuthenticationPrincipal UserDetails userDetails,
                                                         @PathVariable String id,
                                                         @Valid @RequestBody UpdateLaboratoryDTO updateLaboratoryDTO) {
-        laboratoryService.update(id, updateLaboratoryDTO, userDetails.getUsername());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(laboratoryService.update(id, updateLaboratoryDTO, userDetails.getUsername()));
     }
 
     @DeleteMapping("/{id}")

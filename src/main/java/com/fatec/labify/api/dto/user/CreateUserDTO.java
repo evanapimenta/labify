@@ -2,7 +2,11 @@ package com.fatec.labify.api.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateUserDTO {
     @NotBlank(message = "O nome não pode estar em branco")
@@ -19,31 +23,5 @@ public class CreateUserDTO {
     @NotBlank(message = "A senha não pode estar em branco") @Size(min = 8)
     private String password;
 
-    public String getName() {
-        return name;
-    }
-
-    public CreateUserDTO setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public CreateUserDTO setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public CreateUserDTO setPassword(String password) {
-        this.password = password;
-        return this;
-    }
- }
+}
 
