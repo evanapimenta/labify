@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthenticationService {
+
     private final UserRepository userRepository;
     private final TokenService tokenService;
 
@@ -46,4 +47,5 @@ public class AuthenticationService {
             throw new UserNotVerifiedException();
         }
     }
+
 }

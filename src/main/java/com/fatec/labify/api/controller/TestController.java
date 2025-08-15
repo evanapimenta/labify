@@ -4,7 +4,6 @@ package com.fatec.labify.api.controller;
 import com.fatec.labify.api.dto.CreateTestDTO;
 import com.fatec.labify.api.dto.TestResponseDTO;
 import com.fatec.labify.api.dto.UpdateTestDTO;
-import com.fatec.labify.api.dto.user.UserResponseDTO;
 import com.fatec.labify.api.service.TestService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

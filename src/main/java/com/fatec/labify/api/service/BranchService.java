@@ -19,6 +19,7 @@ import java.util.Optional;
 
 @Service
 public class BranchService {
+
     private final AccessControlService accessControlService;
     private final BranchRepository branchRepository;
     private final LaboratoryRepository laboratoryRepository;

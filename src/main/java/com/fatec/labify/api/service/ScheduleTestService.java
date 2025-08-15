@@ -1,5 +1,6 @@
 package com.fatec.labify.api.service;
 
+import com.fatec.labify.api.dto.RescheduleTestDTO;
 import com.fatec.labify.api.dto.ScheduleTestDTO;
 import com.fatec.labify.api.dto.ScheduledTestResponseDTO;
 import com.fatec.labify.domain.*;
@@ -9,27 +10,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ScheduleTestService {
 
-    private final UserService userService;
-    private final PatientService patientService;
     private final BranchRepository branchRepository;
-    private final PatientRepository patientRepository;
     private final TestRepository testRepository;
     private final ScheduleTestRepository scheduleTestRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
     private final AccessControlService accessControlService;
 
-    public ScheduleTestService(TestRepository testRepository, UserService userService, PatientService patientService, BranchRepository branchRepository, PatientRepository patientRepository, ScheduleTestRepository scheduleTestRepository, UserRepository userRepository, AuthenticationService authenticationService, AccessControlService accessControlService) {
+    public ScheduleTestService(TestRepository testRepository, BranchRepository branchRepository, PatientRepository patientRepository, ScheduleTestRepository scheduleTestRepository, UserRepository userRepository, AuthenticationService authenticationService, AccessControlService accessControlService) {
         this.testRepository = testRepository;
-        this.userService = userService;
-        this.patientService = patientService;
         this.branchRepository = branchRepository;
-        this.patientRepository = patientRepository;
         this.scheduleTestRepository = scheduleTestRepository;
         this.userRepository = userRepository;
         this.authenticationService = authenticationService;
@@ -104,4 +100,27 @@ public class ScheduleTestService {
                 .map(ScheduledTestResponseDTO::new)
                 .toList();
     }
+
+    @Transactional
+    public ScheduledTestResponseDTO reschedule(RescheduleTestDTO dto, String id, String username) {
+        User user = userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        ScheduledTest test = scheduleTestRepository.findByIdAndPatient_IdAndStatus(id, user.getId(), TestStatus.AGENDADO).orElseThrow(() -> new NotFoundException("Agendamento não encontrado ou já realizado"));
+
+        Optional.ofNullable(dto.getScheduledFor()).ifPresent(test::setScheduledFor);
+        Optional.ofNullable(dto.getBranchId())
+                .ifPresent(branchId -> branchRepository.findById(branchId)
+                        .ifPresent(test::setBranch));
+
+        scheduleTestRepository.save(test);
+        return new ScheduledTestResponseDTO(test);
+    }
+
+    @Transactional
+    public void cancelTest(String id, String username) {
+        User user = userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
+        ScheduledTest test = scheduleTestRepository.findByIdAndPatient_IdAndStatus(id, user.getId(), TestStatus.AGENDADO).orElseThrow(() -> new NotFoundException("Agendamento não encontrado ou já realizado"));
+
+        scheduleTestRepository.delete(test);
+    }
+
 }

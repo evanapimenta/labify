@@ -44,7 +44,6 @@ public class BranchController {
     public ResponseEntity<BranchResponseDTO> update(@AuthenticationPrincipal UserDetails userDetails,
                                        @PathVariable String id,
                                        @RequestBody UpdateBranchDTO updateBranchDTO) {
-        ;
         return ResponseEntity.ok(branchService.update(userDetails.getUsername(), id, updateBranchDTO));
     }
 

@@ -6,7 +6,10 @@ import com.fatec.labify.api.dto.user.CreateUserDTO;
 import com.fatec.labify.api.dto.user.UpdateUserDTO;
 import com.fatec.labify.api.dto.user.UserResponseDTO;
 import com.fatec.labify.api.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +41,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody CreateUserDTO dto) {
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody CreateUserDTO dto,
+                                                  HttpServletRequest request) {
         UserResponseDTO userDTO = userService.create(dto);
 
         URI location = ServletUriComponentsBuilder
@@ -47,6 +51,9 @@ public class UserController {
                 .buildAndExpand(userDTO.getId())
                 .toUri();
 
+        String ip = request.getRemoteAddr();
+        Logger logger = LoggerFactory.getLogger("UserRegistrationAudit");
+        logger.info("New user '{}' registered from IP {} at {}", userDTO.getEmail(), ip, userDTO.getCreatedAt());
         return ResponseEntity.created(location).body(userDTO);
     }
 

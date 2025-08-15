@@ -64,4 +64,5 @@ public class Patient {
         this.user = user;
         this.createdAt = LocalDateTime.now();
     }
+
 }

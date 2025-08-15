@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
+
     private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {

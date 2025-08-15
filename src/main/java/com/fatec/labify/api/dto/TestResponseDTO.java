@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TestResponseDTO {
+
     private Long id;
 
     private String name;
@@ -44,4 +45,5 @@ public class TestResponseDTO {
         this.isActive = test.isActive();
         this.createdAt = test.getCreatedAt();
     }
+
 }

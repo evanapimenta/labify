@@ -9,5 +9,4 @@ import java.util.Optional;
 @Repository
 public interface LaboratoryRepository extends JpaRepository<Laboratory, String> {
     boolean existsByCnpj(String cnpj);
-    Optional<Laboratory> findBySuperAdminId(String superAdminId);
 }

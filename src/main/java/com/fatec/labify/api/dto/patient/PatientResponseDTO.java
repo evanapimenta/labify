@@ -3,7 +3,6 @@ package com.fatec.labify.api.dto.patient;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fatec.labify.api.dto.user.UserInfoDTO;
-import com.fatec.labify.domain.Address;
 import com.fatec.labify.domain.Gender;
 import com.fatec.labify.domain.Patient;
 import lombok.Getter;

@@ -21,14 +21,13 @@ import java.util.Optional;
 
 @Service
 public class LaboratoryService {
-    private final UserRoleService userRoleService;
+
     private final AccessControlService accessControlService;
     private final LaboratoryRepository laboratoryRepository;
     private final UserRepository userRepository;
 
-    public LaboratoryService(LaboratoryRepository laboratoryRepository, UserRoleService userRoleService, AccessControlService accessControlService, UserRepository userRepository) {
+    public LaboratoryService(LaboratoryRepository laboratoryRepository, AccessControlService accessControlService, UserRepository userRepository) {
         this.laboratoryRepository = laboratoryRepository;
-        this.userRoleService = userRoleService;
         this.accessControlService = accessControlService;
         this.userRepository = userRepository;
     }
@@ -102,4 +101,5 @@ public class LaboratoryService {
             throw new AlreadyExistsException("Laboratório", "CNPJ", cnpj);
         }
     }
+
 }

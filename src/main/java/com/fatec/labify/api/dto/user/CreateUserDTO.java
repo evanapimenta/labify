@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateUserDTO {
+
     @NotBlank(message = "O nome não pode estar em branco")
     private String name;
 

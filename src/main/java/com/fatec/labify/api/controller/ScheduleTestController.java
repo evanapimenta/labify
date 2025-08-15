@@ -1,9 +1,9 @@
 package com.fatec.labify.api.controller;
 
+import com.fatec.labify.api.dto.RescheduleTestDTO;
 import com.fatec.labify.api.dto.ScheduleTestDTO;
 import com.fatec.labify.api.dto.ScheduledTestResponseDTO;
 import com.fatec.labify.api.service.ScheduleTestService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,12 +20,7 @@ public class ScheduleTestController {
         this.scheduleTestService = scheduleTestService;
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<ScheduledTestResponseDTO> scheduleTest(@AuthenticationPrincipal UserDetails userDetails, @Valid ScheduleTestDTO scheduleTestDTO) {
-        return ResponseEntity.ok(scheduleTestService.schedule(scheduleTestDTO, userDetails.getUsername()));
-    }
-
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<List<ScheduledTestResponseDTO>> scheduleTests(@AuthenticationPrincipal UserDetails userDetails,
                                                                         @RequestBody List<ScheduleTestDTO> scheduleTest) {
         return ResponseEntity.ok(scheduleTestService.scheduleTests(scheduleTest, userDetails.getUsername()));
@@ -47,8 +42,17 @@ public class ScheduleTestController {
         return ResponseEntity.ok(scheduleTestService.findScheduledTestsByBranchId(id, userDetails.getUsername()));
     }
 
-    // reschedule test
-    // reschedule tests
-    // cancel tests
-    // cancel test
+    @PutMapping("/{id}")
+    public ResponseEntity<ScheduledTestResponseDTO> rescheduleTest(@AuthenticationPrincipal UserDetails userDetails,
+                                                                   @RequestBody RescheduleTestDTO dto,
+                                                                   @PathVariable String id) {
+        return ResponseEntity.ok(scheduleTestService.reschedule(dto, id, userDetails.getUsername()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelTest(@AuthenticationPrincipal UserDetails userDetails,
+                                           @PathVariable String id) {
+        scheduleTestService.cancelTest(id, userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
 }

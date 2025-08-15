@@ -63,4 +63,5 @@ public class Laboratory {
     public void deactivate() {
         this.active = false;
     }
+
 }

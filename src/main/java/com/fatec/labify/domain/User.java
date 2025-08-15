@@ -23,6 +23,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+
     @Id
     private String id;
 
@@ -97,4 +98,5 @@ public class User implements UserDetails {
         this.token = null;
         this.tokenExpiresIn = null;
     }
+
 }

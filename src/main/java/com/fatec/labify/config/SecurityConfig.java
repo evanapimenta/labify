@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     private final TokenFilter tokenFilter;
 
     public SecurityConfig(TokenFilter tokenFilter) {
@@ -54,6 +55,7 @@ public class SecurityConfig {
                             request.requestMatchers(HttpMethod.DELETE, "/tests/{id}").hasRole("SYSTEM");
 
                             request.requestMatchers(HttpMethod.GET, "schedule/{id}").hasAnyRole("SYSTEM", "SUPER_ADMIN", "ADMIN");
+                            request.requestMatchers(HttpMethod.GET, "/me").hasAnyRole("PATIENT");
 
                             request.requestMatchers(HttpMethod.GET, "/roles/").hasAnyRole("SYSTEM");
                             request.requestMatchers("/user-roles/**").hasAnyRole("SYSTEM", "SUPER_ADMIN", "ADMIN");
@@ -91,4 +93,5 @@ public class SecurityConfig {
             """;
         return RoleHierarchyImpl.fromHierarchy(hierarchy);
     }
+
 }

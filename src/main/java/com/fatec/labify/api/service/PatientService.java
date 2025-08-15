@@ -99,4 +99,5 @@ public class PatientService {
             throw new AlreadyExistsException("Paciente", "CPF", cpf);
         }
     }
+
 }

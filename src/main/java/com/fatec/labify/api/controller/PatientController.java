@@ -1,6 +1,5 @@
 package com.fatec.labify.api.controller;
 
-
 import com.fatec.labify.api.dto.patient.CreatePatientDTO;
 import com.fatec.labify.api.dto.patient.CreatePatientResponseDTO;
 import com.fatec.labify.api.dto.patient.PatientResponseDTO;

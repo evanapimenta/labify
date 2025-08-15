@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Service
 public class TestService {
+
     private final TestRepository testRepository;
 
     public TestService(TestRepository testRepository) {
@@ -61,4 +62,5 @@ public class TestService {
     private void validateName(String name) {
         if (testRepository.existsByName(name)) throw new AlreadyExistsException("Exame", "nome", name);
     }
+
 }

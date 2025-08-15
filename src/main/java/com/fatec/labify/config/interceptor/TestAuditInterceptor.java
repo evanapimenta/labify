@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
-public class LaboratoryAuditInterceptor implements HandlerInterceptor {
+public class TestAuditInterceptor implements HandlerInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(LaboratoryAuditInterceptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestAuditInterceptor.class);
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

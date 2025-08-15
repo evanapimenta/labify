@@ -24,12 +24,19 @@ import lombok.Setter;
 })
 public class Address {
     private String street;
+
     private String number;
+
     private String complement;
+
     private String neighborhood;
+
     private String city;
+
     private String state;
+
     private String zipCode;
+
     private String country;
 
     public Address(String street, String number, String neighborhood, String city, String state, String zipCode, String country) {
@@ -41,4 +48,5 @@ public class Address {
         this.zipCode = zipCode;
         this.country = country;
     }
+
 }

@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 
 @Service
 public class EmailService {
+
     private final JavaMailSender emailSender;
     private static final String FROM = "labify.contato@gmail.com";
     private static final String FROM_NAME = "Labify";
@@ -70,4 +71,5 @@ public class EmailService {
     private String generateEmailContent(String template, String name, String url) {
         return template.replace("[[name]]", name).replace("[[URL]]", url);
     }
+
 }
