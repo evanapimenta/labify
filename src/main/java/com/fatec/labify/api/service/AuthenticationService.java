@@ -42,6 +42,8 @@ public class AuthenticationService {
         return new TokenData(newAccessToken, newRefreshToken);
     }
 
+
+
     public void validateVerified(User user) {
         if (!user.isVerified()) {
             throw new UserNotVerifiedException();

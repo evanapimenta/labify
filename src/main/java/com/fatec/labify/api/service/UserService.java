@@ -6,6 +6,7 @@ import com.fatec.labify.api.dto.user.CreateUserDTO;
 import com.fatec.labify.api.dto.user.UpdateUserDTO;
 import com.fatec.labify.api.dto.user.UserResponseDTO;
 import com.fatec.labify.domain.User;
+import com.fatec.labify.domain.UserToken;
 import com.fatec.labify.exception.*;
 import com.fatec.labify.repository.UserRepository;
 import jakarta.transaction.Transactional;

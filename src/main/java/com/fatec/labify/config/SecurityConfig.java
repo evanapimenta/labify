@@ -33,7 +33,7 @@ public class SecurityConfig {
                         request -> {
                             request.requestMatchers(
                                     "/swagger-ui/**", "/v3/api-docs/**",
-                                    "/login",
+                                    "/login/**",
                                     "/refresh-token",
                                     "/users/verify-account",
                                     "/patients/create/**",

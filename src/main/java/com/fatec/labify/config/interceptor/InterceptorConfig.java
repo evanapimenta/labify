@@ -20,7 +20,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/login", "/refresh-token");
+                .addPathPatterns("/login/**", "/refresh-token");
 
         registry.addInterceptor(laboratoryAuditInterceptor)
                 .addPathPatterns("/labs/**");
