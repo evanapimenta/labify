@@ -16,8 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -62,6 +64,14 @@ public class UserController {
                                        @PathVariable String id,
                                        @RequestBody UpdateUserDTO updateUserDTO) {
         return ResponseEntity.ok(userService.update(id, updateUserDTO, userDetails.getUsername()));
+    }
+
+    @PutMapping("/{id}/upload-image")
+    public ResponseEntity<String> uploadProfileImage(@AuthenticationPrincipal UserDetails userDetails,
+                                                     @PathVariable String id,
+                                                     @RequestParam("file") MultipartFile file) throws IOException {
+
+        return ResponseEntity.ok(userService.updateImage(id, file, userDetails.getUsername()));
     }
 
     @PutMapping("/{id}/change-password")

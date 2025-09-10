@@ -16,9 +16,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -72,6 +78,32 @@ public class UserService implements UserDetailsService {
         return new UserResponseDTO(user);
     }
 
+    @Transactional
+    public String updateImage(String id, MultipartFile file, String username) throws IOException {
+        User user = validateUser(id, username);
+        Path path = Paths.get("uploads/profile-images/");
+
+        if (user.getImagePathUrl() != null) {
+            Path oldFile = path.resolve(
+                    Paths.get(user.getImagePathUrl()).getFileName());
+            Files.deleteIfExists(oldFile);
+        }
+
+        String originalName = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+        String fileName = UUID.randomUUID() + "-" + originalName;
+        Path uploadPath = path;
+        Files.createDirectories(uploadPath);
+
+        Path filePath = uploadPath.resolve(fileName);
+        file.transferTo(filePath);
+
+        String urlPath = "/images/profile/" + fileName;
+        user.setImagePathUrl(urlPath);
+        userRepository.save(user);
+
+        return urlPath;
+    }
+
     private User updateEmail(String id, String newEmail) {
         validateEmail(newEmail);
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Usuário", id));
@@ -95,7 +127,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+        return userRepository.findByEmailIgnoreCase(username).orElseThrow(() -> new NotFoundException("Usuário", username));
     }
 
     public User validateUser(String id, String username) {
@@ -114,6 +146,5 @@ public class UserService implements UserDetailsService {
             throw new AlreadyExistsException("Usuário", "email", email);
         }
     }
-
 }
 

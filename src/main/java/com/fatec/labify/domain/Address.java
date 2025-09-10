@@ -20,7 +20,9 @@ import lombok.Setter;
         @AttributeOverride(name = "city", column = @Column(name = "address_city")),
         @AttributeOverride(name = "state", column = @Column(name = "address_state")),
         @AttributeOverride(name = "zipCode", column = @Column(name = "address_postal_code")),
-        @AttributeOverride(name = "country", column = @Column(name = "address_country"))
+        @AttributeOverride(name = "country", column = @Column(name = "address_country")),
+        @AttributeOverride(name = "latitude", column = @Column(name = "address_latitude")),
+        @AttributeOverride(name = "longitude", column = @Column(name = "address_longitude"))
 })
 public class Address {
     private String street;
@@ -39,7 +41,11 @@ public class Address {
 
     private String country;
 
-    public Address(String street, String number, String neighborhood, String city, String state, String zipCode, String country) {
+    private double latitude;
+
+    private double longitude;
+
+    public Address(String street, String number, String neighborhood, String city, String state, String zipCode, String country, double latitude, double longitude) {
         this.street = street;
         this.number = number;
         this.neighborhood = neighborhood;
@@ -47,6 +53,8 @@ public class Address {
         this.state = state;
         this.zipCode = zipCode;
         this.country = country;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
 }

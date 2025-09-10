@@ -1,6 +1,8 @@
 package com.fatec.labify.api.service;
 
+import com.fatec.labify.api.dto.GeolocationDTO;
 import com.fatec.labify.api.dto.patient.*;
+import com.fatec.labify.client.NominatimClient;
 import com.fatec.labify.domain.Address;
 import com.fatec.labify.domain.Patient;
 import com.fatec.labify.domain.Role;
@@ -23,12 +25,14 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final UserService userService;
     private final UserRoleService userRoleService;
+    private final NominatimClient nominatimClient;
 
-    public PatientService(UserRepository userRepository, PatientRepository patientRepository, UserService userService, UserRoleService userRoleService) {
+    public PatientService(UserRepository userRepository, PatientRepository patientRepository, UserService userService, UserRoleService userRoleService, NominatimClient nominatimClient) {
         this.userRepository = userRepository;
         this.patientRepository = patientRepository;
         this.userService = userService;
         this.userRoleService = userRoleService;
+        this.nominatimClient = nominatimClient;
     }
 
     public Page<PatientResponseDTO> findAll(Pageable pageable) {
@@ -43,16 +47,21 @@ public class PatientService {
     @Transactional
     public CreatePatientResponseDTO create(String email, CreatePatientDTO dto) {
         User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> new NotFoundException("Usuário", email));
-
         validateCpf(dto.getCpf());
 
-        Address address = new Address(dto.getAddressDTO().getStreet(), dto.getAddressDTO().getNumber(),
-                dto.getAddressDTO().getNeighborhood(), dto.getAddressDTO().getCity(), dto.getAddressDTO().getState(),
-                dto.getAddressDTO().getZipCode(), dto.getAddressDTO().getCountry());
+        GeolocationDTO geolocationDTO = nominatimClient.getGeolocation(dto.getAddressDTO());
+        Address address = AddressUtils.setAddress(dto.getAddressDTO(), geolocationDTO);
 
-        Patient patient = new Patient(dto.getCpf(), dto.getInsuranceName(), dto.getGender(), dto.getPhoneNumber(),
-                dto.getWeight(), dto.getEmergencyContactName(), dto.getEmergencyContactNumber(),
-                dto.getInsuranceName() != null, dto.getBirthDate(), address, user);
+        Patient patient = new Patient(
+                dto.getCpf(),
+                dto.getInsuranceName(),
+                dto.getGender(),
+                dto.getPhoneNumber(),
+                dto.getWeight(),
+                dto.getEmergencyContactName(),
+                dto.getEmergencyContactNumber(),
+                dto.getInsuranceName() != null,
+                dto.getBirthDate(), address, user);
 
         user.setRole(Role.PATIENT);
         patientRepository.save(patient);
