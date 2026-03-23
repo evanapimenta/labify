@@ -1,4 +1,4 @@
-package com.fatec.labify.api.dto;
+package com.fatec.labify.api.dto.test;
 
 import com.fatec.labify.api.dto.patient.AddressDTO;
 import com.fatec.labify.domain.ScheduledTest;

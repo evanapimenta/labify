@@ -1,8 +1,8 @@
 package com.fatec.labify.api.service;
 
-import com.fatec.labify.api.dto.CreateTestDTO;
-import com.fatec.labify.api.dto.TestResponseDTO;
-import com.fatec.labify.api.dto.UpdateTestDTO;
+import com.fatec.labify.api.dto.test.CreateTestDTO;
+import com.fatec.labify.api.dto.test.TestResponseDTO;
+import com.fatec.labify.api.dto.test.UpdateTestDTO;
 import com.fatec.labify.domain.Test;
 import com.fatec.labify.exception.AlreadyExistsException;
 import com.fatec.labify.exception.NotFoundException;

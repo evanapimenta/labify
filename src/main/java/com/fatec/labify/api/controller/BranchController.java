@@ -35,6 +35,14 @@ public class BranchController {
         return ResponseEntity.ok(branchService.findById(userDetails.getUsername(), id));
     }
 
+    @GetMapping("/by-area")
+    public ResponseEntity<Page<BranchResponseDTO>> findByArea(@AuthenticationPrincipal UserDetails userDetails,
+                                                              @RequestParam double lat,
+                                                              @RequestParam double lon,
+                                                              @RequestParam(defaultValue = "5") int limit) {
+        return ResponseEntity.ok(branchService.getClosestBranches(userDetails.getUsername(), lat, lon, limit));
+    }
+
     @PostMapping
     public ResponseEntity<CreateBranchResponseDTO> create(@RequestBody CreateBranchDTO createBranchDTO) {
         return ResponseEntity.ok(branchService.create(createBranchDTO));

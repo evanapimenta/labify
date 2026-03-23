@@ -1,8 +1,8 @@
 package com.fatec.labify.api.controller;
 
-import com.fatec.labify.api.dto.RescheduleTestDTO;
-import com.fatec.labify.api.dto.ScheduleTestDTO;
-import com.fatec.labify.api.dto.ScheduledTestResponseDTO;
+import com.fatec.labify.api.dto.test.RescheduleTestDTO;
+import com.fatec.labify.api.dto.test.ScheduleTestDTO;
+import com.fatec.labify.api.dto.test.ScheduledTestResponseDTO;
 import com.fatec.labify.api.service.ScheduleTestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

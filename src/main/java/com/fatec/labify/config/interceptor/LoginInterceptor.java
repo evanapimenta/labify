@@ -20,9 +20,11 @@ public class LoginInterceptor implements HandlerInterceptor {
         String time = LocalDateTime.now().toString();
 
         if (path.equals("/login") && request.getMethod().equalsIgnoreCase("POST")) {
-            logger.info("Login attempt from IP: {} at {}", ip, time);
+            logger.info("Standard login attempt from IP: {} at {}", ip, time);
         } else if (path.equals("/refresh-token") && request.getMethod().equalsIgnoreCase("POST")) {
             logger.info("Refresh token requested from IP: {} at {}", ip, time);
+        } else if (path.equals("/login/google/callback") && request.getMethod().equalsIgnoreCase("GET")) {
+            logger.info("Google SSO login attempt from IP: {} at {}", ip, time);
         }
 
         return true;

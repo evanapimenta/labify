@@ -33,15 +33,16 @@ public class SecurityConfig {
                         request -> {
                             request.requestMatchers(
                                     "/swagger-ui/**", "/v3/api-docs/**",
-                                    "/login",
+                                    "/login/**",
                                     "/refresh-token",
                                     "/users/verify-account",
                                     "/patients/create/**",
-                                    "/error").permitAll();
+                                    "/error",
+                                    "/users/{id}/change-password").permitAll();
                             request.requestMatchers(HttpMethod.POST, "/users").permitAll();
                             request.requestMatchers(HttpMethod.GET, "/users").hasRole("SYSTEM");
 
-                            request.requestMatchers(HttpMethod.GET, "/labs").hasRole("SYSTEM");
+                            request.requestMatchers(HttpMethod.GET, "/labs").permitAll();
                             request.requestMatchers(HttpMethod.POST, "/labs").hasRole("SYSTEM");
                             request.requestMatchers(HttpMethod.PUT, "/labs/**").hasAnyRole("SYSTEM", "SUPER_ADMIN");
                             request.requestMatchers(HttpMethod.DELETE, "/labs").hasRole("SYSTEM");

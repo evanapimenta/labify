@@ -1,9 +1,11 @@
 package com.fatec.labify.api.service;
 
+import com.fatec.labify.api.dto.GeolocationDTO;
 import com.fatec.labify.api.dto.laboratory.CreateLaboratoryDTO;
 import com.fatec.labify.api.dto.laboratory.CreateLaboratoryResponseDTO;
 import com.fatec.labify.api.dto.laboratory.LaboratoryResponseDTO;
 import com.fatec.labify.api.dto.laboratory.UpdateLaboratoryDTO;
+import com.fatec.labify.client.NominatimClient;
 import com.fatec.labify.domain.Address;
 import com.fatec.labify.domain.Laboratory;
 import com.fatec.labify.domain.User;
@@ -23,12 +25,14 @@ import java.util.Optional;
 public class LaboratoryService {
 
     private final AccessControlService accessControlService;
+    private final NominatimClient nominatimClient;
     private final LaboratoryRepository laboratoryRepository;
     private final UserRepository userRepository;
 
-    public LaboratoryService(LaboratoryRepository laboratoryRepository, AccessControlService accessControlService, UserRepository userRepository) {
+    public LaboratoryService(LaboratoryRepository laboratoryRepository, AccessControlService accessControlService, NominatimClient nominatimClient, UserRepository userRepository) {
         this.laboratoryRepository = laboratoryRepository;
         this.accessControlService = accessControlService;
+        this.nominatimClient = nominatimClient;
         this.userRepository = userRepository;
     }
 
@@ -47,13 +51,14 @@ public class LaboratoryService {
     public CreateLaboratoryResponseDTO create(CreateLaboratoryDTO dto) {
         validateCnpj(dto.getCnpj());
 
-        Address address = new Address(dto.getAddressDTO().getStreet(), dto.getAddressDTO().getNumber(),
-                dto.getAddressDTO().getNeighborhood(), dto.getAddressDTO().getCity(), dto.getAddressDTO().getState(),
-                dto.getAddressDTO().getZipCode(), dto.getAddressDTO().getCountry());
+        GeolocationDTO geolocationDTO = nominatimClient.getGeolocation(dto.getAddressDTO());
+        Address address = AddressUtils.setAddress(dto.getAddressDTO(), geolocationDTO);
 
-
-        Laboratory lab = new Laboratory(dto.getName(), address, dto.getPhoneNumber(),
-                dto.getEmail(), dto.getCnpj());
+        Laboratory lab = new Laboratory(
+                dto.getName(), address,
+                dto.getPhoneNumber(),
+                dto.getEmail(),
+                dto.getCnpj());
 
         laboratoryRepository.save(lab);
         return new CreateLaboratoryResponseDTO(lab);

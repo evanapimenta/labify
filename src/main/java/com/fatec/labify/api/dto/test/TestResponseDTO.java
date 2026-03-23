@@ -1,4 +1,4 @@
-package com.fatec.labify.api.dto;
+package com.fatec.labify.api.dto.test;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fatec.labify.domain.Test;

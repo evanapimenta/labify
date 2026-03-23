@@ -1,4 +1,4 @@
-package com.fatec.labify.api.dto;
+package com.fatec.labify.api.dto.test;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
